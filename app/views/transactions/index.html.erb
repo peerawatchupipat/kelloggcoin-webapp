@@ -2,7 +2,7 @@
 
 <!-- Step 1: List all transactions, starting with the ICO -->
 
-<ol>
+<!-- <ol>
   <% for t in @transactions %>
     <% if t.from_user_id == nil %>
       <li>Initial coin offering: <%= t.amount %> KC to <%= User.find_by({"id" => t.to_user_id})["name"] %></li>
@@ -10,8 +10,46 @@
       <li><%= t.amount %> KC from <%= User.find_by({"id" => t.from_user_id})["name"] %> to <%= User.find_by({"id" => t.to_user_id})["name"] %></li>
     <% end %>
   <% end %>
-</ol>
+</ol> -->
+
 <!-- Step 2: Calculate and display the balances -->
+<!-- balance = coins received - coins sent-->
+<!-- 
+┌─ START: pick a user (Brian) ──────────────────┐
+│                                               │
+│  1. Set received = 0                          │
+│                                               │
+│  ┌─ inner loop 1 (received) ─────────────┐    │
+│  │  find all transactions to Brian       │    │
+│  │  keep adding to received              │    │
+│  └───────────────────────────────────────┘    │
+│                                               │
+│  2. Set sent = 0                              │
+│                                               │
+│  ┌─ inner loop 2 (sent) ──────────────────┐   │
+│  │  find all transactions from Brian      │   │
+│  │  keep adding to sent                   │   │
+│  └────────────────────────────────────────┘   │
+│                                               │
+│  3. balance = received - sent                 │
+│  4. Print Brian's balance                     │
+│                                               │
+└─ DONE with Brian. Now pick next user (Ben) ───┘ -->
+
+<% for u in @users %>
+  <% received = 0 %>
+  <% for transaction in Transaction.where({"to_user_id" => u["id"]}) %>
+    <% received = received + transaction["amount"] %>
+  <% end %>
+
+  <% sent = 0 %>
+  <% for transaction in Transaction.where({"from_user_id" => u["id"]}) %>
+    <% sent = sent + transaction["amount"] %>
+  <% end %>
+
+  <% balance = received - sent %>
+  <p><%= u["name"] %>'s Banlance: <%= balance %> KC</p>
+<% end %>
 
 <!-- 
 Expected balances:
@@ -21,3 +59,27 @@ Balance for Evan: 1164 KC
 Balance for Anthony: 1456 KC
 Balance for Krystina: 3516 KC 
 -->
+
+<table>
+  <tr>
+    <th>Amount</th>
+    <th>From</th>
+    <th>To</th>
+  </tr>
+
+  <% for t in @transactions %>
+    <% if t.from_user_id == nil %>
+      <tr>
+        <td><%= t.amount %></td>
+        <td>ICO</td>
+        <td><%= User.find_by({"id" => t.to_user_id})["name"] %></td>
+      </tr>
+    <% else %>
+      <tr>
+        <td><%= t.amount %></td>
+        <td><%= User.find_by({"id" => t.from_user_id})["name"] %></td>
+        <td><%= User.find_by({"id" => t.to_user_id})["name"] %></td>
+      </tr>
+    <% end %>
+  <% end %>
+</table>
