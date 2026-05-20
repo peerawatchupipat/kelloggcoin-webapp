@@ -2,6 +2,15 @@
 
 <!-- Step 1: List all transactions, starting with the ICO -->
 
+<ol>
+  <% for t in @transactions %>
+    <% if t.from_user_id == nil %>
+      <li>Initial coin offering: <%= t.amount %> KC to <%= User.find_by({"id" => t.to_user_id})["name"] %></li>
+    <% else %>
+      <li><%= t.amount %> KC from <%= User.find_by({"id" => t.from_user_id})["name"] %> to <%= User.find_by({"id" => t.to_user_id})["name"] %></li>
+    <% end %>
+  <% end %>
+</ol>
 <!-- Step 2: Calculate and display the balances -->
 
 <!-- 
